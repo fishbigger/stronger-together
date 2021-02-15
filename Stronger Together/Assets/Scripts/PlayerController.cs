@@ -19,15 +19,19 @@ public class PlayerController : MonoBehaviour
     public float rotateSpeed;
     public float moveSpeed;
 
+    public socketTest socket;
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        socket.sendPos(transform);
+
+
         if (player == WhichPlayer.Player_1)
         {
             HandlePlayer1();
@@ -38,17 +42,28 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A))
         {
-            lookAt.RotateAround(transform.position, Vector3.forward, rotateSpeed * Time.deltaTime);
+            lookAt.RotateAround(transform.position, Vector3.forward, rotateSpeed * Time.fixedDeltaTime);
+            handleRotate();
         }
         if (Input.GetKey(KeyCode.D))
         {
-            lookAt.RotateAround(transform.position, Vector3.back, rotateSpeed * Time.deltaTime);
+            lookAt.RotateAround(transform.position, Vector3.back, rotateSpeed * Time.fixedDeltaTime);
+
+            handleRotate();
         }
         if (Input.GetKey(KeyCode.W))
         {
-            transform.position += transform.up * moveSpeed;
+            rb.MovePosition(transform.position + transform.up * moveSpeed * Time.fixedDeltaTime);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            rb.MovePosition(transform.position - transform.up * moveSpeed * Time.fixedDeltaTime);
         }
 
+    }
+
+    void handleRotate()
+    {
         Vector2 lookDir = lookAt.position - transform.position;
         float Angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
 
